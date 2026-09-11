@@ -12,4 +12,6 @@ public interface LedgerEntryRepo extends JpaRepository<LedgerEntry, Long>
 {
     @Query("SELECT SUM(l.amount) FROM LedgerEntry l WHERE l.account = :account")
     BigDecimal getBalanceByAccount(@Param("account") Account account);
+
+
 }

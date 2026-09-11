@@ -7,6 +7,7 @@ import com.Favuur.WalletSystem.repository.AccountRepo;
 import com.Favuur.WalletSystem.strategy.TransactionStrategy;
 import com.Favuur.WalletSystem.strategy.TransactionStrategyFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 @Service
@@ -28,21 +29,21 @@ public class TransactionService
         TransactionStrategy strategy = factory.getStrategy(TransactionType.DEPOSIT);
         return strategy.process(null, toAccount, amount);
     }
-
+    @Transactional
     public Transaction withdraw(long fromAccountId, BigDecimal amount, String enteredPin)
     {
-        Account fromAccount = accountRepo.findById(fromAccountId).orElseThrow(() -> new IllegalArgumentException("Account not Found"));
+        Account fromAccount = accountRepo.findByIdForUpdate(fromAccountId).orElseThrow(() -> new IllegalArgumentException("Account not Found"));
         if(!pinVerify.verifyPin(fromAccount.getUser(), enteredPin))
         {throw new IllegalArgumentException("Incorrect Pin");}
 
         TransactionStrategy strategy = factory.getStrategy(TransactionType.WITHDRAW);
         return strategy.process(fromAccount, null, amount);
     }
-
+    @Transactional
     public Transaction transfer(long fromAccountId, long toAccountId, BigDecimal amount, String enteredPin)
     {
         Account toAccount = accountRepo.findById(toAccountId).orElseThrow(()-> new IllegalArgumentException("Account not Found"));
-        Account fromAccount = accountRepo.findById(fromAccountId).orElseThrow(()-> new IllegalArgumentException("Account not Found"));
+        Account fromAccount = accountRepo.findByIdForUpdate(fromAccountId).orElseThrow(()-> new IllegalArgumentException("Account not Found"));
         if(!pinVerify.verifyPin(fromAccount.getUser(), enteredPin))
         {throw new IllegalArgumentException("Incorrect Pin");}
 
