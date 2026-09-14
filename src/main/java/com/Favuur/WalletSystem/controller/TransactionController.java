@@ -1,11 +1,11 @@
 package com.Favuur.WalletSystem.controller;
 
+import com.Favuur.WalletSystem.dto.TransactionResponse;
+import com.Favuur.WalletSystem.dto.TransferRequest;
+import com.Favuur.WalletSystem.dto.WithdrawRequest;
 import com.Favuur.WalletSystem.model.Transaction;
 import com.Favuur.WalletSystem.service.TransactionService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
@@ -20,19 +20,43 @@ public class TransactionController
     }
 
     @PostMapping("/deposit")
-    public Transaction deposit(@RequestParam long toAccountId, @RequestParam BigDecimal amount){
-        return transactionService.deposit(toAccountId, amount);
+    public TransactionResponse deposit(@RequestParam long toAccountId, @RequestParam BigDecimal amount){
+        Transaction transaction = transactionService.deposit(toAccountId, amount);
+
+        TransactionResponse response = new TransactionResponse();
+        response.setTransactionType(transaction.getTransactionType());
+        response.setTransactionStatus(transaction.getTransactionStatus());
+        response.setCreatedDate(transaction.getCreatedDate());
+        response.setTransactionId(transaction.getId());
+
+        return response;
+
     }
 
     @PostMapping("/withdraw")
-    public Transaction withdraw(@RequestParam long fromAccountId, @RequestParam BigDecimal amount, @RequestParam String enteredPin)
+    public TransactionResponse withdraw(@RequestBody WithdrawRequest request)
     {
-        return transactionService.withdraw(fromAccountId, amount, enteredPin);
+        Transaction transaction = transactionService.withdraw(request.getFromAccountId(), request.getAmount(), request.getEnteredPin());
+
+        TransactionResponse response = new TransactionResponse();
+        response.setTransactionId(transaction.getId());
+        response.setTransactionStatus(transaction.getTransactionStatus());
+        response.setTransactionType(transaction.getTransactionType());
+        response.setCreatedDate(transaction.getCreatedDate());
+
+        return response;
     }
 
     @PostMapping("/transfer")
-    public Transaction transfer(@RequestParam long fromAccountId, @RequestParam long toAccountId, @RequestParam BigDecimal amount, @RequestParam String enteredPin )
+    public TransactionResponse transfer(@RequestBody TransferRequest request)
     {
-        return transactionService.transfer(fromAccountId, toAccountId, amount, enteredPin);
+        Transaction transaction = transactionService.transfer(request.getFromAccountId(), request.getToAccountId(), request.getAmount(), request.getEnteredPin());
+
+        TransactionResponse response = new TransactionResponse();
+        response.setTransactionId(transaction.getId());
+        response.setTransactionType(transaction.getTransactionType());
+        response.setTransactionStatus(transaction.getTransactionStatus());
+        response.setCreatedDate(transaction.getCreatedDate());
+        return response;
     }
 }

@@ -1,5 +1,7 @@
 package com.Favuur.WalletSystem.controller;
 
+import com.Favuur.WalletSystem.dto.AccountResponse;
+import com.Favuur.WalletSystem.dto.CreateAccountRequest;
 import com.Favuur.WalletSystem.model.Account;
 import com.Favuur.WalletSystem.model.User;
 import com.Favuur.WalletSystem.repository.AccountRepo;
@@ -25,16 +27,25 @@ public class AccountController
     }
 
     @PostMapping
-    public Account createAccount(@RequestParam long userId)
+    public AccountResponse createAccount(@RequestBody CreateAccountRequest request)
     {
-        User user = userRepo.findById(userId).orElseThrow(()-> new IllegalArgumentException("can't find user"));
+        User user = userRepo.findById(request.getUserId()).orElseThrow(()-> new IllegalArgumentException("can't find user"));
         Account acc = new Account();
         acc.setUser(user);
         acc.setCreatedDate(LocalDateTime.now());
         acc = accountRepo.save(acc);
 
         acc.setAccountNumber("ACC" + String.format("%06d", acc.getId()));
-        return accountRepo.save(acc);
+        acc = accountRepo.save(acc);
+
+        AccountResponse response = new AccountResponse();
+        response.setAccountNumber(acc.getAccountNumber());
+        response.setId(acc.getId());
+        response.setUserId(acc.getUser().getId());
+        response.setCreatedDate(acc.getCreatedDate());
+
+        return response;
+
 
 
     }

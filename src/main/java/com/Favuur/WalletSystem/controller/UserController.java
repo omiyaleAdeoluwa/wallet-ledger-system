@@ -1,12 +1,11 @@
 package com.Favuur.WalletSystem.controller;
 
+import com.Favuur.WalletSystem.dto.CreateUserRequest;
+import com.Favuur.WalletSystem.dto.UserResponse;
 import com.Favuur.WalletSystem.model.User;
 import com.Favuur.WalletSystem.repository.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -21,14 +20,21 @@ public class UserController
     }
 
     @PostMapping
-    public User createUser(@RequestParam String name, @RequestParam String email, @RequestParam String phoneNumber, @RequestParam String pin )
+    public UserResponse createUser(@RequestBody CreateUserRequest request)
     {
         User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-        user.setHashedPin(passwordEncoder.encode(pin));
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setHashedPin(passwordEncoder.encode(request.getPin()));
 
-        return userRepo.save(user);
+        user = userRepo.save(user);
+
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        return response;
+
     }
 }
