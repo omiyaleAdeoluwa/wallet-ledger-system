@@ -9,3 +9,5 @@ public interface TransactionStrategy
 {
     Transaction process(Account fromAccount, Account toAccount, BigDecimal amount);
 }
+
+

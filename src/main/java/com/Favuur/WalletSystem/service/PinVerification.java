@@ -18,3 +18,5 @@ public class PinVerification
         return passwordEncoder.matches(enteredPin, user.getHashedPin());
     }
 }
+
+
