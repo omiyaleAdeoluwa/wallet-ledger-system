@@ -14,3 +14,5 @@ public interface AccountRepo extends JpaRepository<Account, Long>
     @Query ("SELECT a FROM Account a WHERE a.id = :id")
     Optional<Account> findByIdForUpdate(@Param("id") Long id);
 }
+
+

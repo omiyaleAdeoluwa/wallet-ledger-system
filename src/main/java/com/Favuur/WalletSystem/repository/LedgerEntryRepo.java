@@ -15,3 +15,5 @@ public interface LedgerEntryRepo extends JpaRepository<LedgerEntry, Long>
 
 
 }
+
+
